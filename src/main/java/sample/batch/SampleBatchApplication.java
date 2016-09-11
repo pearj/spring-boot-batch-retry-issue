@@ -16,21 +16,21 @@
 
 package sample.batch;
 
+import javax.activation.DataSource;
+
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.StepContribution;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
-import org.springframework.batch.core.repository.JobRepository;
-import org.springframework.batch.core.repository.support.MapJobRepositoryFactoryBean;
 import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.repeat.RepeatStatus;
-import org.springframework.batch.support.transaction.ResourcelessTransactionManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.retry.annotation.EnableRetry;
@@ -38,7 +38,7 @@ import org.springframework.retry.annotation.EnableRetry;
 import sample.batch.service.MyRetryService;
 import sample.batch.service.MyServiceNoRetry;
 
-@SpringBootApplication
+@SpringBootApplication(exclude={DataSource.class,DataSourceAutoConfiguration.class})
 @EnableBatchProcessing
 @Configuration
 @EnableRetry
@@ -88,15 +88,4 @@ public class SampleBatchApplication {
 		System.exit(SpringApplication
 				.exit(SpringApplication.run(SampleBatchApplication.class, args)));
 	}
-	
-    @Bean
-    ResourcelessTransactionManager transactionManager() {
-        return new ResourcelessTransactionManager();
-    }
-    
-    @Bean
-    public JobRepository getJobRepo() throws Exception {
-        return new MapJobRepositoryFactoryBean(transactionManager()).getObject();
-    }
-
 }
